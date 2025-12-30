@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chat AI</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #343541;
+    color: white;
+    direction: rtl;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    padding: 1rem;
+    text-align: center;
+    background: #202123;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.msg {
+    max-width: 85%;
+    padding: 0.9rem 1rem;
+    margin: 0.7rem 0;
+    border-radius: 0.8rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-size: 1rem;
+}
+
+.user {
+    background: #0b93f6;
+    margin-left: auto;
+    border-bottom-right-radius: 0;
+}
+
+.bot {
+    background: #444654;
+    margin-right: auto;
+    border-bottom-left-radius: 0;
+}
+
+footer {
+    background: #202123;
+    padding: 0.7rem;
+    display: flex;
+    gap: 0.6rem;
+}
+
+textarea {
+    flex: 1;
+    resize: none;
+    border-radius: 0.6rem;
+    border: none;
+    padding: 0.7rem;
+    font-size: 1rem;
+    min-height: 3rem;
+}
+
+button {
+    padding: 0 1.2rem;
+    border: none;
+    border-radius: 0.6rem;
+    background: #0b93f6;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header> LUFI
+  چت هوش مصنوعی
+</header>
+
+<div id="chat"></div>
+
+<footer>
+    <textarea id="q" placeholder="پیام خود را بنویسید..."></textarea>
+    <button onclick="send()">ارسال</button>
+</footer>
+
+<script>
+const chat = document.getElementById("chat");
+const input = document.getElementById("q");
+
+function addMessage(text, cls) {
+    const div = document.createElement("div");
+    div.className = "msg " + cls;
+    div.innerText = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function send() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    const api =
+        "https://corsproxy.io/?" +
+        encodeURIComponent(
+            "https://shython-apis.liara.run/ai?prompt=" + text
+        );
+
+    addMessage("در حال فکر کردن...", "bot");
+
+    fetch(api)
+        .then(r => r.text())
+        .then(t => {
+            try {
+                const res = JSON.parse(t);
+                chat.lastChild.innerText = res.data ?? "پاسخی دریافت نشد";
+            } catch {
+                chat.lastChild.innerText = t;
+            }
+        })
+        .catch(() => {
+            chat.lastChild.innerText = "خطا در دریافت پاسخ";
+        });
+}
+
+/* ارسال با Enter */
+input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        send();
+    }
+});
+</script>
+
+</body>
+</html>
