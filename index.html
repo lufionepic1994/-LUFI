@@ -1,124 +1,129 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>One Piece Chat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- عنوان صفحه -->
+    <title>هوش مصنوعی</title>
 
-<style>
-* {
-    box-sizing: border-box;
-}
+    <!-- اضافه کردن favicon (آیکون) -->
+    <link rel="icon" type="image/png" href="Lufi.png">
 
-html {
-    font-size: 16px;
-}
+    <style>
+    * {
+        box-sizing: border-box;
+    }
 
-body {
-    margin: 0;
-    font-family: sans-serif;
-    direction: rtl;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    color: white;
+    html {
+        font-size: 16px;
+    }
 
-    /* بک‌گراند زورو */
-    background: url("Zoro.jpeg") no-repeat center center fixed;
-    background-size: cover;
-}
+    body {
+        margin: 0;
+        font-family: sans-serif;
+        direction: rtl;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: white;
 
-/* لایه تیره روی بک‌گراند */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    z-index: -1;
-}
+        /* بک‌گراند زورو */
+        background: url("Zoro.jpeg") no-repeat center center fixed;
+        background-size: cover;
+    }
 
-/* ===== HEADER ===== */
-header {
-    height: 160px;
-    background: url("Lufi.png") no-repeat center center;
-    background-size: cover;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    /* لایه تیره روی بک‌گراند */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: -1;
+    }
 
-/* تیره‌کننده هدر */
-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-}
+    /* ===== HEADER ===== */
+    header {
+        height: 160px;
+        background: url("Lufi.png") no-repeat center center;
+        background-size: cover;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-header span {
-    position: relative;
-    z-index: 1;
-    font-size: 1.6rem;
-    font-weight: bold;
-}
+    /* تیره‌کننده هدر */
+    header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+    }
 
-/* ===== CHAT ===== */
-#chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-}
+    header span {
+        position: relative;
+        z-index: 1;
+        font-size: 1.6rem;
+        font-weight: bold;
+    }
 
-.msg {
-    max-width: 85%;
-    padding: 0.9rem 1rem;
-    margin: 0.7rem 0;
-    border-radius: 0.8rem;
-    line-height: 1.7;
-    white-space: pre-wrap;
-}
+    /* ===== CHAT ===== */
+    #chat {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+    }
 
-.user {
-    background: #0b93f6;
-    margin-left: auto;
-    border-bottom-right-radius: 0;
-}
+    .msg {
+        max-width: 85%;
+        padding: 0.9rem 1rem;
+        margin: 0.7rem 0;
+        border-radius: 0.8rem;
+        line-height: 1.7;
+        white-space: pre-wrap;
+    }
 
-.bot {
-    background: #444654;
-    margin-right: auto;
-    border-bottom-left-radius: 0;
-}
+    .user {
+        background: #0b93f6;
+        margin-left: auto;
+        border-bottom-right-radius: 0;
+    }
 
-/* ===== FOOTER ===== */
-footer {
-    background: rgba(32,33,35,0.9);
-    padding: 0.7rem;
-    display: flex;
-    gap: 0.6rem;
-}
+    .bot {
+        background: #444654;
+        margin-right: auto;
+        border-bottom-left-radius: 0;
+    }
 
-textarea {
-    flex: 1;
-    resize: none;
-    border-radius: 0.6rem;
-    border: none;
-    padding: 0.7rem;
-    font-size: 1rem;
-    min-height: 3rem;
-}
+    /* ===== FOOTER ===== */
+    footer {
+        background: rgba(32,33,35,0.9);
+        padding: 0.7rem;
+        display: flex;
+        gap: 0.6rem;
+    }
 
-button {
-    padding: 0 1.2rem;
-    border: none;
-    border-radius: 0.6rem;
-    background: #0b93f6;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-}
-</style>
+    textarea {
+        flex: 1;
+        resize: none;
+        border-radius: 0.6rem;
+        border: none;
+        padding: 0.7rem;
+        font-size: 1rem;
+        min-height: 3rem;
+    }
+
+    button {
+        padding: 0 1.2rem;
+        border: none;
+        border-radius: 0.6rem;
+        background: #0b93f6;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+    </style>
 </head>
 
 <body>
