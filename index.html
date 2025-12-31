@@ -6,13 +6,7 @@
 <title>Chat AI</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
-html {
-    font-size: 16px;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -23,42 +17,61 @@ body {
     flex-direction: column;
     color: white;
 
-    /* بک‌گراند عکس */
+    /* بک گراند زورو */
     background: url("Zoro.jpeg") no-repeat center center fixed;
     background-size: cover;
 }
 
-/* لایه تیره برای خوانایی */
+/* لایه تیره */
 body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,0.55);
     z-index: -1;
+}
+
+/* حالت روز */
+body.light::before {
+    background: rgba(255,255,255,0.6);
 }
 
 header {
     padding: 1rem;
     text-align: center;
-    background: rgba(32, 33, 35, 0.85);
-    font-weight: bold;
-    font-size: 1.1rem;
+    background: rgba(32,33,35,0.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header button {
+    font-size: .85rem;
+    padding: .3rem .6rem;
 }
 
 #chat {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
+    scroll-behavior: smooth;
 }
 
 .msg {
     max-width: 85%;
-    padding: 0.9rem 1rem;
-    margin: 0.7rem 0;
-    border-radius: 0.8rem;
+    padding: .9rem 1rem;
+    margin: .6rem 0;
+    border-radius: .8rem;
     line-height: 1.7;
     white-space: pre-wrap;
-    font-size: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    animation: fade .25s ease;
+}
+
+@keyframes fade {
+    from {opacity:0; transform:translateY(8px);}
+    to {opacity:1; transform:translateY(0);}
 }
 
 .user {
@@ -73,64 +86,113 @@ header {
     border-bottom-left-radius: 0;
 }
 
+body.light .bot {
+    background:#e5e7eb;
+    color:#000;
+}
+
+body.light .user {
+    background:#2563eb;
+}
+
 footer {
-    background: rgba(32, 33, 35, 0.9);
-    padding: 0.7rem;
+    background: rgba(32,33,35,0.95);
+    padding: .7rem;
     display: flex;
-    gap: 0.6rem;
+    gap: .6rem;
 }
 
 textarea {
     flex: 1;
     resize: none;
-    border-radius: 0.6rem;
+    border-radius: .6rem;
     border: none;
-    padding: 0.7rem;
+    padding: .7rem;
     font-size: 1rem;
     min-height: 3rem;
+    max-height: 150px;
+    overflow-y: auto;
+    outline: none;
 }
 
 button {
-    padding: 0 1.2rem;
     border: none;
-    border-radius: 0.6rem;
+    border-radius: .6rem;
     background: #0b93f6;
     color: white;
-    font-size: 1rem;
+    padding: 0 1rem;
     cursor: pointer;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
 }
 </style>
 </head>
 
 <body>
 
-<header>چت هوش مصنوعی</header>
+<header>
+    <span>🤖 چت هوش مصنوعی</span>
+    <div>
+        <button onclick="toggleTheme()">🌓</button>
+        <button onclick="clearChat()">🗑</button>
+    </div>
+</header>
 
 <div id="chat"></div>
 
 <footer>
-    <textarea id="q" placeholder="پیام خود را بنویسید..."></textarea>
-    <button onclick="send()">ارسال</button>
+    <textarea id="q" placeholder="پیام... (Enter=ارسال | Shift+Enter=خط جدید)"></textarea>
+    <button id="sendBtn" onclick="send()">ارسال</button>
 </footer>
 
 <script>
 const chat = document.getElementById("chat");
 const input = document.getElementById("q");
+const btn = document.getElementById("sendBtn");
 
+/* بارگذاری چت */
+chat.innerHTML = localStorage.getItem("chat") || "";
+
+/* اضافه پیام */
 function addMessage(text, cls) {
     const div = document.createElement("div");
     div.className = "msg " + cls;
     div.innerText = text;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+    saveChat();
+    return div;
 }
 
+/* تایپ تدریجی */
+function typeText(el, text) {
+    el.innerText = "";
+    let i = 0;
+    const t = setInterval(() => {
+        el.innerText += text[i++];
+        chat.scrollTop = chat.scrollHeight;
+        if (i >= text.length) {
+            clearInterval(t);
+            btn.disabled = false;
+            saveChat();
+        }
+    }, 20);
+}
+
+/* ارسال */
 function send() {
     const text = input.value.trim();
     if (!text) return;
 
     addMessage(text, "user");
     input.value = "";
+    input.style.height = "auto";
+
+    btn.disabled = true;
+    const botMsg = addMessage("...", "bot");
 
     const api =
         "https://corsproxy.io/?" +
@@ -138,30 +200,62 @@ function send() {
             "https://shython-apis.liara.run/ai?prompt=" + text
         );
 
-    addMessage("در حال فکر کردن...", "bot");
-
     fetch(api)
         .then(r => r.text())
         .then(t => {
             try {
                 const res = JSON.parse(t);
-                chat.lastChild.innerText = res.data ?? "پاسخی دریافت نشد";
+                typeText(botMsg, res.data || "پاسخی دریافت نشد");
             } catch {
-                chat.lastChild.innerText = t;
+                typeText(botMsg, t);
             }
         })
         .catch(() => {
-            chat.lastChild.innerText = "خطا در دریافت پاسخ";
+            botMsg.innerText = "خطا";
+            btn.disabled = false;
         });
 }
 
-/* ارسال با Enter */
+/* Enter */
 input.addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         send();
     }
 });
+
+/* auto resize */
+input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = input.scrollHeight + "px";
+});
+
+/* ذخیره */
+function saveChat() {
+    localStorage.setItem("chat", chat.innerHTML);
+}
+
+/* پاک کردن */
+function clearChat() {
+    if (confirm("چت پاک شود؟")) {
+        chat.innerHTML = "";
+        localStorage.removeItem("chat");
+    }
+}
+
+/* تم */
+function toggleTheme() {
+    document.body.classList.toggle("light");
+    localStorage.setItem(
+        "theme",
+        document.body.classList.contains("light") ? "light" : "dark"
+    );
+}
+
+/* بارگذاری تم */
+if (localStorage.getItem("theme") === "light") {
+    document.body.classList.add("light");
+}
 </script>
 
 </body>
